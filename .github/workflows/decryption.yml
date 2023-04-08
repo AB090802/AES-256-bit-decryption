@@ -1,8 +1,8 @@
-name: Decrypt and Upload Ozip File
+name: Decrypt and Upload Ozip to Bash Upload
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   decrypt_and_upload:
@@ -10,15 +10,16 @@ jobs:
     steps:
       - name: Install Dependencies
         run: |
-          sudo apt-get update && sudo apt-get install -y openssl
-      - name: Download Encrypted Ozip file
+          sudo apt-get update && sudo apt-get install -y openssl zip curl
+      - name: Download Encrypted File
         run: |
           curl -L -o file.ozip "https://s3.ap-south-1.amazonaws.com/blob-ap-south-1-ukyez4/sara/4d/4dfb/4dfb64be-a92f-4cf0-a45a-741688d37194.bin?response-content-disposition=attachment%3B%20filename%3D%22file.ozip%22&response-content-type=&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA4DM2EY46SOWUMUP4%2F20230408%2Fap-south-1%2Fs3%2Faws4_request&X-Amz-Date=20230408T183544Z&X-Amz-SignedHeaders=host&X-Amz-Expires=1800&X-Amz-Signature=eb8868064dbadf8a88199c486cf0a70b1ab78209e26dfb63463c900cbdfb2586"
-      - name: Decrypt Ozip file
+      - name: Decrypt File
         run: |
-          read -s -p "Abhi@1234  : " password
-          echo
+          read -s -p " Abhi@1234: " password
+          echo "Decrypting file..."
           openssl enc -d -aes-256-cbc -in file.ozip -out file.zip -k "$password"
+          echo "Decryption completed."
       - name: Upload Decrypted file to Bash Upload
         run: |
           curl -T file.zip https://bashupload.com/
